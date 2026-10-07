@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "awv-informatik"
+  },
+  "targets": {
+    "awv-informatik": {
+      "hosting": {
+        "production": [
+          "handguard-classcad-ai"
+        ]
+      }
+    }
+  }
+}
