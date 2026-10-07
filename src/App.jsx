@@ -31,7 +31,7 @@ export function App() {
       <footer className="foot">
         <span className="ofb">
           <i className="cube" />
-          handguard.ofb · {PARAMS.length} parameters · MIL-STD-1913 · M-LOK
+          handguard.ofb · {PARAMS.length} parameters
         </span>
         <span className="made">
           Rebuilt live by{' '}

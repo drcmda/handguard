@@ -24,7 +24,9 @@ export function Nav() {
           <i className="cube" />
           <span>handguard.parts</span>
         </a>
-        <span className="kick">AR-15 handguard · made to order</span>
+        <span className="kick">
+          MIL-STD-1913 M-LOK handguard<span className="more">· made to order</span>
+        </span>
       </div>
       <div className="links">
         <a className="on" href="#configure">

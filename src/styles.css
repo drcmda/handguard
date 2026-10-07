@@ -64,6 +64,7 @@ i.cube { width: 18px; height: 18px; flex: none; display: inline-block; backgroun
 .nav .brand { display: flex; align-items: center; gap: 22px; min-width: 0; }
 .nav .logo { display: flex; align-items: center; gap: 12px; font: 700 21px/1 var(--mono); letter-spacing: -0.02em; white-space: nowrap; }
 .nav .kick { display: flex; align-items: center; height: 22px; padding-left: 22px; border-left: 1px solid var(--line2); font: 600 12.5px/1 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--fde); white-space: nowrap; }
+.nav .kick .more { margin-left: 0.7em; }
 .nav .links { display: flex; gap: 30px; margin-left: auto; font: 500 16px/1 var(--ui); color: var(--mute); }
 .nav .links .on { color: var(--ink); font-weight: 600; }
 .nav .links span { cursor: default; }
@@ -274,7 +275,7 @@ i.cube { width: 18px; height: 18px; flex: none; display: inline-block; backgroun
 @media (max-width: 1339px) {
   .main { grid-template-columns: minmax(0, 1fr) minmax(340px, 392px); }
 }
-@media (max-width: 1099px) {
+@media (max-width: 1279px) {
   .nav .links { display: none; }
   .nav .cart { margin-left: auto; }
 }
@@ -308,6 +309,7 @@ i.cube { width: 18px; height: 18px; flex: none; display: inline-block; backgroun
   :root { --nav: 56px; --card-pad: 18px; }
   .nav .logo { font-size: 17px; gap: 10px; }
   .nav .kick { padding-left: 28px; }
+  .nav .kick .more { display: none; }
   .stage { height: clamp(260px, 46svh, 460px); }
   .specs b { font-size: 32px; }
   .specs span { font-size: 10.5px; letter-spacing: 0.1em; }
