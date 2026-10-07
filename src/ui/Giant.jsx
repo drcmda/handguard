@@ -1,4 +1,4 @@
-// What a hand is changing, large, for a moment: it stands behind the part, in its room.
+// What a hand is changing, for a moment: in the part's room, in its top left corner, clear of the part.
 import { useEffect, useState } from 'react'
 import { useShop } from '../store'
 import { finishOf } from '../design'

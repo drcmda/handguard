@@ -32,7 +32,7 @@ export const useShop = create((set, get) => ({
   solved: null,
   body: null,
   volume: null,
-  finish: 'black',
+  finish: 'fde',
   // what was just changed, and when (the page shows it, large, for a moment)
   touch: null,
   // the cart
