@@ -11,7 +11,7 @@ import { evaluate } from './model/exprs'
 // long, 0.9″ radius.
 export const BASE = { lengthIn: 10, frontPicSlots: 7, noseExtIn: 0.3, flowRIn: 0.9 }
 export const PARAMS = Object.keys(BASE)
-export const RANGE = { lengthIn: [8.5, 16], frontPicSlots: [5, 11] }
+export const RANGE = { lengthIn: [10, 15], frontPicSlots: [5, 11] }
 export const LENGTH_STEP = 0.5
 export const NOSES = [
   { value: 0.3, label: 'Short' },

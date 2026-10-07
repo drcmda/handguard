@@ -83,7 +83,7 @@ same part, rev 3:
 In the browser that took a rebuild of the first build's part at 8½–12″ from 2.6–3.3 s to
 1.7–2.0 s, and at 16″ from 4.7–5.4 s to 3.1–3.6 s, for every one of the four parameters. The part
 has more to it since (the front rails' lightening, the spot faces, the rear-face bores): it rebuilds
-in 2.1–3.2 s at 8½–12″ and in about 4.5 s at 16″. `bench-build.html` measured it: it
+in 2.2–3.2 s at 10–12″ and in about 4.5 s at 16″ (the shop goes from 10″ to 15″). `bench-build.html` measured it: it
 replays a build script in the page's own engine (`?build=build`, or `?build=original` for the first
 build, in `cad/builds`), times every rebuild of a sequence of changes (`?seq=lengthIn:12,…`), and
 can save the model it built (`?save=handguard.ofb`, into `cad/out`, with `npm run dev`).
