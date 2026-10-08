@@ -173,7 +173,10 @@ class Photo {
     const d = this.device
     const rw = Math.ceil(this.w * scale)
     const rh = Math.ceil(this.h * scale)
-    const spp = scale < 1 ? 2 : this.total === 0 ? 1 : this.spp
+    // (a picture begun afresh at full size starts with a few samples: from one alone the floor's shadow,
+    // a ratio of the light kept from it to the light there is, comes out far too dark, and the filter
+    // spreads it over the whole floor for a frame)
+    const spp = scale < 1 ? 2 : this.total === 0 ? Math.max(4, this.spp) : this.spp
     const mat = FINISHES[this.finish] ?? FINISHES.black
 
     // the frame's uniforms
