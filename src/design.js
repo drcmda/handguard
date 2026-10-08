@@ -1,4 +1,4 @@
-// The shop's own rules for the handguard, in the model's own math: its 239 expressions
+// The shop's own rules for the handguard, in the model's own math: its 219 expressions
 // (src/model/expressions.json, as cad/handguard.ofb has them) worked out in the page. ClassCAD
 // builds the part; this is only what the page must know before ClassCAD answers: which
 // configurations the controls allow, what a configuration has (its slots, its weight), the price,
@@ -33,8 +33,7 @@ export const finishOf = key => FINISHES.find(f => f.key === key) ?? FINISHES[0]
 
 // What a configuration has, from the model's own formulas: its length, the slots on the top rail,
 // the Picatinny openings up front, the M-LOK slots in a row at 3, 6 and 9 o'clock and on each of
-// the four diagonals, and the other pattern counts the model's features are built with; and any
-// other of its numbers (at), for drawing it.
+// the four diagonals; and any other of its numbers (at), for drawing it.
 const memo = new Map()
 export function counts(c) {
   const key = PARAMS.map(k => c[k]).join()
@@ -47,7 +46,6 @@ export function counts(c) {
       front: e.get('nFrontOpen'),
       rowA: e.get('nA'),
       rowB: e.get('nB'),
-      patterns: ['nSH', 'nTS', 'shK0', 'tsK0'].map(n => e.get(n)),
       at: n => e.get(n),
     }
     v.mlok = 3 * v.rowA + 4 * v.rowB
@@ -60,7 +58,7 @@ export function counts(c) {
 // pattern at least two (a front rail opening patterned once is where the engine gives up).
 export function sound(c) {
   const n = counts(c)
-  return n.rowA >= 1 && n.rowB >= 1 && n.front >= 2 && n.top >= 2 && n.patterns.every(p => Number.isFinite(p) && p >= 2)
+  return n.rowA >= 1 && n.rowB >= 1 && n.front >= 2 && n.top >= 2
 }
 
 // The shortest length a configuration allows, and the most Picatinny slots up front it takes.

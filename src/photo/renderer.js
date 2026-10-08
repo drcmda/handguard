@@ -261,7 +261,7 @@ class Photo {
       const t0 = performance.now()
       d.queue.onSubmittedWorkDone().then(() => {
         const dt = performance.now() - t0
-        if (dt < 6 && this.spp < 4) this.spp *= 2
+        if (dt < 6 && this.spp < 8) this.spp *= 2
         else if (dt > 12 && this.spp > 1) this.spp /= 2
         this.timing = false
       })

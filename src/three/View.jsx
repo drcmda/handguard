@@ -1,6 +1,7 @@
-// The part's room in the page: no walls, no floor, the page's own dark behind it. The part is
-// shaded with ambient occlusion and outlined, as the CAD app outlines what is in hand. It turns slowly until a hand turns it; while the
-// engine rebuilds, a sweep of light runs along it.
+// The part's room in the page: no walls, no floor, the page itself behind it. The part is shaded with
+// ambient occlusion; it stands still until a hand turns it, and stops where the hand lets go (no easing
+// out: the photo starts gathering the moment it rests); while the engine rebuilds, a sweep of light runs
+// along it.
 import { useRef } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
@@ -21,9 +22,12 @@ function Rig() {
   const controls = useThree(s => s.controls)
   useFrame((_, dt) => {
     const k = 1 - Math.exp(-dt * 4)
+    // (eased, and once within a hair of where it is going, there: a camera that has arrived does not
+    // creep on by ever smaller steps, which the photo would gather as blur)
     if (controls) {
       const t = controls.target
-      const dx = (length / 2 - t.x) * k
+      const gap = length / 2 - t.x
+      const dx = Math.abs(gap) < 0.01 ? gap : gap * k
       t.x += dx
       camera.position.x += dx
     }
@@ -37,6 +41,7 @@ function Rig() {
     if (!target) return
     const off = camera.position.clone().sub(target)
     const d = off.length()
+    if (Math.abs(want - d) < 0.02) return
     camera.position.copy(target).addScaledVector(off, (d + (want - d) * k) / d)
   })
   return null
@@ -57,6 +62,9 @@ export function View() {
   return (
     <Canvas
       className="canvas"
+      // (under the photo the drawing's canvas shows nothing, whatever WebGL was last told to clear to:
+      // invisible, but still the surface a hand turns the part on)
+      style={{ opacity: photo ? 0 : 1 }}
       flat
       dpr={[1, 2]}
       gl={{ antialias: true, alpha: true }}
@@ -68,10 +76,7 @@ export function View() {
       <OrbitControls
         makeDefault
         target={[127, 0, 0]}
-        autoRotate={!photo}
-        autoRotateSpeed={0.45}
-        enableDamping
-        dampingFactor={0.08}
+        enableDamping={false}
         enablePan={false}
         enableZoom={false}
         minPolarAngle={0.35}

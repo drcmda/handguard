@@ -1,7 +1,7 @@
 // The part in a CAD app's dark look: an even light and one lamp over the viewer's left shoulder
 // (wherever the part is turned), a cool rim where its faces turn away (so that a black part stands
 // off the dark page), its B-rep edges and its silhouettes inked. Its faces are also on the MASK layer,
-// for the frame's passes (Frame.jsx: their ambient occlusion, and the orange outline round them).
+// for the frame's passes (Frame.jsx: their ambient occlusion).
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'

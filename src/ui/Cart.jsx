@@ -90,8 +90,7 @@ function Thumb({ id, config, finish }) {
         {range(g('nB'), g('xB0'), mlok).map(x =>
           slot(x, -(mid(g('ao_t'), ao) - g('dUpper') * Math.SQRT1_2), 32, 5, 1.7),
         )}
-        {/* the holes along the boss, the clamp screws' counterbores */}
-        {range(g('nSH'), g('xsh0'), pitch).map(x => slot(x, -g('shZ'), g('shLen'), g('shH'), g('shH') / 2))}
+        {/* the clamp screws' counterbores */}
         {range(2, g('screwX1'), g('screwSpacing')).map(x => (
           <circle key={x} cx={x} cy={g('screwZ')} r={g('cbDia') / 2} fill={ink} />
         ))}

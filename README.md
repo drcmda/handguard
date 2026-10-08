@@ -45,8 +45,8 @@ once more, to where the hand lets go.
 `public/handguard.ofb.gz`), built by [`cad/build.js`](cad/build.js): an octagonal body with a MIL-STD-1913 rail on top, a thick rear
 section round the barrel nut that flows into the body on S-curves, a split clamp with two 1/4-28
 screws on spot faces and a keel, Picatinny sections at 3, 6 and 9 o'clock up front, a shovel nose,
-M-LOK slots on every face but the top, four QD sockets, lightening slots and holes along every rail,
-and lightening bores in the rear face round the barrel nut. It has 239 named expressions; four of them are the shop's controls, and the rest follow from those, in the
+M-LOK slots on every face but the top, four QD sockets, relief channels inside the front rails, and
+lightening bores in the rear face round the barrel nut. It has 219 named expressions; four of them are the shop's controls, and the rest follow from those, in the
 model itself: how many rail slots there are, how many M-LOK slots fit in each row, where the QD
 sockets and the thick rear end.
 
@@ -71,19 +71,21 @@ same part, rev 3:
 
 - makes the thick rear one intersection of its four slabs, and joins it to the body at once;
 - cuts the clamp bore, the cavity and the gas-block passage in one subtraction;
-- collects every other cut (nose, rail reliefs, clamp split and screws, rail slots, lightening,
-  M-LOK, QD) and makes them in a single subtraction at the end;
-- cuts the front rails' lightening and relief channels into the rails before they join the part,
+- collects every other cut (nose, rail reliefs, clamp split and screws, rail slots, M-LOK, QD) and
+  makes them in a single subtraction at the end;
+- cuts the front rails' slots and relief channels into the rails before they join the part,
   and joins them after the large subtraction, with the few cuts that touch them (the nose, the
   channels' openings, the front QD sockets) in a small one of their own;
-- draws the lightening slots and holes and the M-LOK slots with flat sides: their round ends and
-  corners as tangent facets. A boolean cuts flat faces several times faster than round ones; the
+- draws the M-LOK slots with flat sides: their round corners as tangent facets. A boolean cuts flat faces several times faster than round ones; the
   slots come out a hair larger at the corners (the part 0.03 % lighter), which no accessory notices.
 
 In the browser that took a rebuild of the first build's part at 8½–12″ from 2.6–3.3 s to
 1.7–2.0 s, and at 16″ from 4.7–5.4 s to 3.1–3.6 s, for every one of the four parameters. The part
-has more to it since (the front rails' lightening, the spot faces, the rear-face bores): it rebuilds
-in 2.2–3.2 s at 10–12″ and in about 4.5 s at 16″ (the shop goes from 10″ to 15″). `bench-build.html` measured it: it
+has more to it since (the spot faces, the rear-face bores, the front rails' relief channels), and
+less: no lightening slots in the rails' groove floors, no oval holes along the boss, no slits through
+the front rails' necks. Each was a pattern of small cuts every rebuild paid for; without them it
+rebuilds in 1.2–1.5 s at 10–13″, twice as fast as with them (2.5–3.3 s), and the file the page
+fetches went from 843 to 485 kB. `bench-build.html` measured it: it
 replays a build script in the page's own engine (`?build=build`, or `?build=original` for the first
 build, in `cad/builds`), times every rebuild of a sequence of changes (`?seq=lengthIn:12,…`), and
 can save the model it built (`?save=handguard.ofb`, into `cad/out`, with `npm run dev`).

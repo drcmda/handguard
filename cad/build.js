@@ -18,9 +18,10 @@
 //
 // Rev 3 builds for fast rebuilds (handguard.parts changes it live, in the browser): the thick rear
 // is one intersection, the bore, cavity and gas-block passage one subtraction, every other cut
-// (nose, reliefs, clamp, slots, lightening, M-LOK, QD) a single subtraction at the end; the
-// lightening holes and the M-LOK slots are drawn with flat sides (their round corners as
-// tangent facets), which the boolean cuts several times faster than round ones.
+// (nose, reliefs, clamp, slots, M-LOK, QD) a single subtraction at the end; the M-LOK slots are
+// drawn with flat sides (their round corners as tangent facets), which the boolean cuts several
+// times faster than round ones. No lightening cuts in the rails or along the boss: each was a pattern
+// of small cuts every rebuild paid for.
 // =====================================================================================
 const T0 = Date.now()
 const report = {}
@@ -70,9 +71,6 @@ const E = [
   ['qdRearOffsetIn', 0.25],    // rear QD centre, measured from the clamp-bore end
   ['mlokFrontGapIn', 0.15], ['mlokEndMarginIn', 0.25],
   ['tabLenIn', 0.20], ['tabGapIn', 0.96],      // anti-rotation tabs (fit to your upper!)
-  ['shLenIn', 0.18], ['shHIn', 0.06],          // oval lightening holes, centred on the boss side faces
-  ['tsLenIn', 0.30], ['tsWIn', 0.12],          // lightening slots through the rail groove floors
-  ['tsMarginRearIn', 0.25], ['tsMarginFrontIn', 0.30],
   ['rbDiaIn', 0.16], ['rbDepthIn', 1.40],      // lightening bores into the rear face, round the barrel nut, in the thick wall:
   ['rbPhi0Deg', -38], ['rbPhi1Deg', 42], ['rbCount', 6],  // per side, from below the 3/9 line (clear of the screws) up to the gas-block passage
   ['spotDiaIn', 0.55], ['spotDepth', 0.25],    // spot faces on both keel sides: flat round seats for the screw heads and the tapped exits
@@ -142,13 +140,6 @@ const E = [
   ['reliefDia', 'splitReliefDiaIn*inch'], ['reliefZ0', '-(keelBot + 5)'], ['reliefH', 'keelBot + 5 - (ai - 1)'],
   ['tabLen', 'tabLenIn*inch'], ['tabY0', 'tabGapIn*inch/2'],
   // lightening
-  ['shLen', 'shLenIn*inch'], ['shH', 'shHIn*inch'], ['shZ', '(bossWallBot + railBase)/2'],
-  ['shQ', '(flowEnd + 2 - xg0)/picPitch'], ['shK0', 'div(shQ, 1) + sign(fmod(shQ, 1))'],
-  ['xsh0', 'xg0 + shK0*picPitch'], ['nSH', 'div((Lrail - tsMarginFrontIn*inch - xsh0)/picPitch, 1) + 1'],
-  ['tsLen', 'tsLenIn*inch'], ['tsW', 'tsWIn*inch'],
-  ['tsQ', '(clampLen + tsMarginRearIn*inch - xg0)/picPitch'], ['tsK0', 'div(tsQ, 1) + sign(fmod(tsQ, 1))'],
-  ['xts0', 'xg0 + tsK0*picPitch'], ['nTS', 'div((Lrail - tsMarginFrontIn*inch - xts0)/picPitch, 1) + 1'],
-  ['frHoleH', '(picZ3 - railBase)/2'],        // front rails: the neck holes' height over the body face (mid-neck)
   ['rbDia', 'rbDiaIn*inch'], ['rbDepth', 'rbDepthIn*inch'], ['rbR', '(nutR + aoR)/2'], ['rbPhi0', 'rbPhi0Deg*C:PI/180'],
   ['rbY0', 'rbR*cos(rbPhi0)'], ['rbZ0', 'rbR*sin(rbPhi0)'], ['rbStep', '(rbPhi1Deg - rbPhi0Deg)/(rbCount - 1)*C:PI/180'],
   ['spotDia', 'spotDiaIn*inch'],
@@ -244,19 +235,6 @@ async function mlokSketch(planeId, name) {
   const e = R * Math.tan(Math.PI / 8)
   const pts = [[-B - e, -C], [B + e, -C], [A, -D - e], [A, D + e], [B + e, C], [-B - e, C], [-A, D + e], [-A, -D - e]]
   const lines = (await api.v1.sketch.line(pts.map((p, i) => ({ id: sk, startPos: [p[0], p[1], 0], endPos: [pts[(i + 1) % 8][0], pts[(i + 1) % 8][1], 0], genFixation: false, genVertAndHoriz: false, genTangency: false, genIncidence: true })))).result
-  for (const l of lines) { const p = (await api.v1.sketch.getPoints({ id: l })).result; await api.v1.sketch.constraint({ id: sk, type: 'FIXATION', geomIds: [p.startId] }) }
-  return { sk, ids: lines, level: 31 }
-}
-// static obround (cosmetic lightening), centred on plane origin
-async function obround(planeId, name, halfStraight, r, alongX) {
-  // (its round ends as polygons round the circle: a few flat faces cut faster than one round one)
-  const sk = (await api.v1.sketch.create({ id: partId, planeId, name })).result
-  const k = 3, R = r / Math.cos(Math.PI / (2 * k)), a = halfStraight
-  const pts = []
-  for (let i = 0; i <= k; i++) { const t = -Math.PI / 2 + (Math.PI * i) / k, rr = i === 0 || i === k ? r : R; pts.push([a + rr * Math.cos(t), rr * Math.sin(t)]) }
-  for (let i = 0; i <= k; i++) { const t = Math.PI / 2 + (Math.PI * i) / k, rr = i === 0 || i === k ? r : R; pts.push([-a + rr * Math.cos(t), rr * Math.sin(t)]) }
-  const loc = alongX ? pts : pts.map(([x, y]) => [y, x])
-  const lines = (await api.v1.sketch.line(loc.map((p, i) => ({ id: sk, startPos: [p[0], p[1], 0], endPos: [loc[(i + 1) % loc.length][0], loc[(i + 1) % loc.length][1], 0], genFixation: false, genVertAndHoriz: false, genTangency: false, genIncidence: true })))).result
   for (const l of lines) { const p = (await api.v1.sketch.getPoints({ id: l })).result; await api.v1.sketch.constraint({ id: sk, type: 'FIXATION', geomIds: [p.startId] }) }
   return { sk, ids: lines, level: 31 }
 }
@@ -386,12 +364,8 @@ const railPts = [...railHalf.map(r => ({ w: [0, r[0], r[1]], vd: r[2], hd: r[3] 
 const railSk = await polySketch(right, 'FrontRailProfile', railPts, rightLocal)
 const wedgePts = [{ w: [-5, -ev.rampY1, 0], hd: 5, vd: X('rampY1') }, { w: [ev.rampX2, ev.rampYtop, 0], hd: X('rampX2'), vd: X('rampYtop') }, { w: [-5, ev.rampYtop, 0], hd: 5, vd: X('rampYtop') }]
 const wedgeSk = await polySketch(top, 'FrontRailRampProfile', wedgePts, topLocal)
-// their lightening, as the top rail's: at every open slot a slot through the groove floor (across the
-// rail, down into its relief channel), and a hole through the neck into the channel (a straight slit:
-// the neck is low, and round ends there made every rebuild slower for nothing one could see). In the
-// rail's own frame (X along it, Y up from the body face, Z across), cut with its slots and its
-// channel, before the rail joins the part.
-const frSlotSk = await obround(front, 'FrontRailLighteningSlotProfile', (ev.tsLen - ev.tsW) / 2, ev.tsW / 2, false)
+// In the rail's own frame (X along it, Y up from the body face, Z across): its slots and its relief
+// channel (open at the front end) cut before the rail joins the part.
 async function frontRail(tag, slotStartExpr, countExpr, reliefStart, reliefLen) {
   const r = await api.v1.part.extrusion({ id: partId, name: `FrontRail${tag}`, references: railSk.lines, type: 'CUSTOM', direction: [0, 0, 1], limit1: X('segStart'), limit2: X('frontEnd') })
   const w = await api.v1.part.extrusion({ id: partId, name: `FrontRail${tag}Ramp`, references: wedgeSk.lines, type: 'SYMMETRIC', limit2: 40 })
@@ -399,15 +373,9 @@ async function frontRail(tag, slotStartExpr, countExpr, reliefStart, reliefLen) 
   const cs = (await api.v1.part.workCSys({ id: partId, name: `FrontRail${tag}SlotCS`, offset: `[@expr.${slotStartExpr} - @expr.picSlotW/2, @expr.picH - @expr.picSlotD, -20]` })).result
   const c = await api.v1.part.box({ id: partId, name: `FrontRail${tag}SlotCutter`, references: [cs], length: X('picSlotW'), width: '@expr.picSlotD + 3', height: 40 })
   const p = await api.v1.part.linearPattern({ id: partId, name: `FrontRail${tag}Slots`, targets: [c.result], dir1: { references: [xAxis], distance: X('picPitch'), count: X(countExpr), merged: 1 } })
-  const ls = await api.v1.part.extrusion({ id: partId, name: `FrontRail${tag}LighteningSlot`, references: frSlotSk.ids, type: 'SYMMETRIC', limit2: '2*@expr.picH + 2' })
-  const lst = await api.v1.part.translation({ id: partId, name: `FrontRail${tag}LighteningToFirst`, targets: [ls.result], references: [xAxis], distance: X(slotStartExpr) })
-  const lsp = await api.v1.part.linearPattern({ id: partId, name: `FrontRail${tag}Lightening`, targets: [lst.result], dir1: { references: [xAxis], distance: X('picPitch'), count: X(countExpr), merged: 1 } })
-  const hcs = (await api.v1.part.workCSys({ id: partId, name: `FrontRail${tag}NeckHoleCS`, offset: `[@expr.${slotStartExpr} - @expr.shLen/2, @expr.frHoleH - @expr.shH/2, -@expr.picNeckHalf - 2]` })).result
-  const lh = await api.v1.part.box({ id: partId, name: `FrontRail${tag}NeckHole`, references: [hcs], length: X('shLen'), width: X('shH'), height: '2*@expr.picNeckHalf + 4' })
-  const lhp = await api.v1.part.linearPattern({ id: partId, name: `FrontRail${tag}NeckHoles`, targets: [lh.result], dir1: { references: [xAxis], distance: X('picPitch'), count: X(countExpr), merged: 1 } })
   const ccs = (await api.v1.part.workCSys({ id: partId, name: `FrontRail${tag}ReliefCS`, offset: `[@expr.${reliefStart}, -2, -@expr.frReliefW/2]` })).result
   const ch = await api.v1.part.box({ id: partId, name: `FrontRail${tag}Relief`, references: [ccs], length: X(reliefLen), width: '@expr.frReliefH + 2', height: X('frReliefW') })
-  const s = await api.v1.part.boolean({ id: partId, name: `FrontRail${tag}Cut`, type: 'SUBTRACTION', target: r.result, tools: [wt.result, p.result, lsp.result, lhp.result, ch.result] })
+  const s = await api.v1.part.boolean({ id: partId, name: `FrontRail${tag}Cut`, type: 'SUBTRACTION', target: r.result, tools: [wt.result, p.result, ch.result] })
   const m = await api.v1.part.translation({ id: partId, name: `FrontRail${tag}ToFace`, targets: [s.result], references: [yAxis], distance: X('ao') })
   return { id: m.result, levels: [r, w, wt, c, p, s, m].map(lv) }
 }
@@ -488,20 +456,7 @@ const gBox = await api.v1.part.box({ id: partId, name: 'TopRailSlotCutter', refe
 const gPat = await api.v1.part.linearPattern({ id: partId, name: 'TopRailSlotPattern', targets: [gBox.result], dir1: { references: [xAxis], distance: X('picPitch'), count: X('nTop'), merged: 1 } })
 await cut('TopRailSlots', [gPat.result])
 
-// =========================== 7. lightening: slots through the top-rail groove floors, oval holes centred on the boss sides ===========================
-const ts = await obround(top, 'TopLighteningSlotProfile', (ev.tsLen - ev.tsW) / 2, ev.tsW / 2, false)
-const tsE = await api.v1.part.extrusion({ id: partId, name: 'TopLighteningSlot', references: ts.ids, type: 'CUSTOM', direction: [0, 0, 1], limit1: '@expr.chTop - 2', limit2: '@expr.rt + 1' })
-const tsT = await api.v1.part.translation({ id: partId, name: 'TopLighteningToFirst', targets: [tsE.result], references: [xAxis], distance: X('xts0') })
-const tsP = await api.v1.part.linearPattern({ id: partId, name: 'TopLighteningPattern', targets: [tsT.result], dir1: { references: [xAxis], distance: X('picPitch'), count: X('nTS'), merged: 1 } })
-await cut('TopRailLightening', [tsP.result])
-const sh = await obround(front, 'BossSideHoleProfile', (ev.shLen - ev.shH) / 2, ev.shH / 2, true)
-const shE = await api.v1.part.extrusion({ id: partId, name: 'BossSideHole', references: sh.ids, type: 'SYMMETRIC', limit2: '2*@expr.bossHalf + 4' })
-const shZt = await api.v1.part.translation({ id: partId, name: 'BossSideHoleUp', targets: [shE.result], references: [zAxis], distance: X('shZ') })
-const shXt = await api.v1.part.translation({ id: partId, name: 'BossSideHoleToFirst', targets: [shZt.result], references: [xAxis], distance: X('xsh0') })
-const shP = await api.v1.part.linearPattern({ id: partId, name: 'BossSideHolePattern', targets: [shXt.result], dir1: { references: [xAxis], distance: X('picPitch'), count: X('nSH'), merged: 1 } })
-await cut('BossSideHoles', [shP.result])
-
-// =========================== 8. M-LOK: 3/6/9 rows + offset diagonal rows ===========================
+// =========================== 7. M-LOK: 3/6/9 rows + offset diagonal rows ===========================
 const wpA = (await api.v1.part.workPlane({ id: partId, name: 'MlokSidePlane', type: 'PLANE', references: [front], offset: X('ao') })).result
 const skA = await mlokSketch(wpA, 'MlokSlotA')
 const eA = await api.v1.part.extrusion({ id: partId, name: 'MlokCutterA', references: skA.ids, type: 'SYMMETRIC', limit2: X('mlCutDepth') })
@@ -527,7 +482,7 @@ const mBU = await api.v1.part.mirror({ id: partId, name: 'MlokRowsUpperDiag', ta
 await cut('MlokCut_UpperDiag', [mBU.result])
 report.mlokSketches = [skA.level, skBL.level, skBU.level]
 
-// =========================== 9. QD sockets: 2 front (3/9 rail pads), 2 rear (3/9 rings on the thick wall) ===========================
+// =========================== 8. QD sockets: 2 front (3/9 rail pads), 2 rear (3/9 rings on the thick wall) ===========================
 async function qdPair(tag, offset, dia, height, into = cut) {
   const cs = (await api.v1.part.workCSys({ id: partId, name: `${tag}CS`, offset, rotation: rot })).result
   const c = await api.v1.part.cylinder({ id: partId, name: tag, references: [cs], diameter: X(dia), height })
@@ -545,7 +500,7 @@ await qdPair('RearQdLockGroove', '[@expr.qdRearX, @expr.aoR + @expr.qdRingH - @e
 { const s = await api.v1.part.boolean({ id: partId, name: 'RailCuts', type: 'SUBTRACTION', target: body, tools: LATE }); body = s.result }
 const mp = (await api.v1.part.calculateMassProperties({ id: partId })).result
 report.final = { volume_mm3: mp.volume, cog: mp.cog, mass_6061_g: mp.volume * 2.70e-3, mass_6061_oz: mp.volume * 2.70e-3 / 28.3495 }
-report.counts = { topRailSlots: ev.nTop, mlok_3_6_9_perRow: ev.nA, mlok_diag_perRow: ev.nB, topLightening: ev.nTS, bossSideHoles: ev.nSH,
+report.counts = { topRailSlots: ev.nTop, mlok_3_6_9_perRow: ev.nA, mlok_diag_perRow: ev.nB, 
   frontSideOpenSlots: ev.nFrontOpen, frontBottomSlots: ev.frontPicSlots }
 report.layout_in = Object.fromEntries(['qdRearX', 'thickEnd', 'flowEnd', 'mStart', 'xA0', 'segStart', 'xf0', 'xf0B', 'xQdF', 'frRelS0', 'frRelB0', 'Lrail', 'L'].map(k => [k, +(ev[k] / 25.4).toFixed(3)]))
 report.seconds = (Date.now() - T0) / 1000
