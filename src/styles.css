@@ -117,6 +117,13 @@ i.cube { width: 18px; height: 18px; flex: none; display: inline-block; backgroun
 .loader .steps li.done i { background: var(--green); }
 .loader small { font: 500 12px/1.4 var(--mono); color: var(--dim); max-width: 340px; }
 .stage .canvas { touch-action: none; }
+/* the photo, over the drawing (which still takes the hand that turns the part) */
+.stage .photo { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0; transition: opacity 0.4s ease; }
+.stage .photo.on { opacity: 1; }
+.stage .looks { position: absolute; right: 0; top: 4px; z-index: 3; display: flex; padding: 3px; border-radius: 11px; background: var(--panel); box-shadow: 0 0 0 1px var(--line); }
+.stage .looks button { height: 30px; padding: 0 14px; border-radius: 8px; font: 600 11.5px/30px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); transition: background 0.15s, color 0.15s; }
+.stage .looks button:hover:not(.on) { color: var(--ink); }
+.stage .looks button.on { background: var(--ink); color: var(--paper); }
 .stage .hint { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 2; font: 500 12px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); pointer-events: none; white-space: nowrap; transition: color 0.3s; }
 .stage .hint.busy { color: var(--accent2); }
 .status { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 0 24px; }
@@ -290,6 +297,7 @@ i.cube { width: 18px; height: 18px; flex: none; display: inline-block; backgroun
   .stage { position: sticky; top: var(--nav); z-index: 4; flex: none; height: clamp(280px, 50svh, 600px); margin: 0 calc(-1 * var(--pad)); background-color: var(--paper); background-image: var(--dots); background-size: 18px 18px; background-position: 9px 9px; border-bottom: 1px solid var(--line); box-shadow: 0 18px 24px -24px rgba(20, 22, 26, 0.18); }
   .stage .hint { bottom: 10px; }
   .stage .giant { left: var(--pad); top: 14px; }
+  .stage .looks { right: var(--pad); top: 12px; }
   .card { order: 1; width: 100%; max-width: 560px; align-self: center; margin-top: 16px; }
   .specs { order: 2; width: 100%; max-width: 560px; align-self: center; justify-content: space-between; padding: 30px 4px 18px; }
   .buybar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 46%); align-items: center; gap: 14px; padding-top: 14px; padding-bottom: calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line2); box-shadow: 0 -16px 24px -22px rgba(20, 22, 26, 0.16); }

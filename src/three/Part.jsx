@@ -10,6 +10,7 @@ import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeome
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import { silhouette } from './body'
 import { MASK } from './Frame'
+import { useShop } from '../store'
 
 const INK = '#07080a'
 
@@ -111,6 +112,9 @@ export function Part({ body, color, scan, width = 1.1 }) {
     ink.resolution.set(size.width * dpr, size.height * dpr)
     ink.linewidth = width * dpr
     if (!body || !group.current) return
+    // (while the photo shows the part, its silhouettes are not wanted)
+    const shop = useShop.getState()
+    if (shop.look === 'photo' && shop.photoOK) return
     // the silhouette, from where the eye is (in the part's own space), when it has moved
     const eye = camera.position.clone().applyMatrix4(group.current.matrixWorld.clone().invert())
     const seenNow = seen.current

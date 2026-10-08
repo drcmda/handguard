@@ -76,16 +76,38 @@ function Loader() {
   )
 }
 
+// how the part is shown: path traced, or drawn
+function Looks() {
+  const look = useShop(s => s.look)
+  return (
+    <div className="looks" role="group" aria-label="How the part is shown">
+      {[
+        ['photo', 'Photo'],
+        ['drawing', 'Drawing'],
+      ].map(([k, label]) => (
+        <button key={k} className={k === look ? 'on' : ''} onClick={() => useShop.setState({ look: k })}>
+          {label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export function Stage() {
   const ready = useShop(s => s.status === 'ready')
   const busy = useShop(s => s.busy)
+  const photo = useShop(s => s.look === 'photo' && s.photoOK)
+  const photoOK = useShop(s => s.photoOK)
   const touched = useTouched()
+  const setCanvas = el => el && useShop.getState().photoCanvas !== el && useShop.setState({ photoCanvas: el })
   return (
     <section className="stage">
       <Giant k={touched} />
       <div className={'room' + (ready ? ' in' : '')}>
         <View />
+        <canvas className={'photo' + (photo ? ' on' : '')} ref={setCanvas} />
       </div>
+      {ready && photoOK && <Looks />}
       <Loader />
       {ready && (
         <div className={'hint' + (busy ? ' busy' : '')}>{busy ? 'Rebuilding the part' : 'Drag to turn it'}</div>

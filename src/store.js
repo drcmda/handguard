@@ -33,6 +33,10 @@ export const useShop = create((set, get) => ({
   body: null,
   volume: null,
   finish: 'fde',
+  // how the part is shown: path traced ('photo', where the browser has WebGPU) or drawn
+  look: 'photo',
+  photoOK: null,
+  photoCanvas: null,
   // what was just changed, and when (the page shows it, large, for a moment)
   touch: null,
   // the cart

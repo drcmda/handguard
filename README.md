@@ -89,6 +89,31 @@ build, in `cad/builds`), times every rebuild of a sequence of changes (`?seq=len
 can save the model it built (`?save=handguard.ofb`, into `cad/out`, with `npm run dev`).
 `bench.html` times the shop's own file the same way.
 
+## The photo
+
+Where the browser has WebGPU, the part is shown as a photo: path traced in the page, by compute
+shaders of the shop's own ([`src/photo`](src/photo)), over the drawing. The drawing stays a click
+away, and is what browsers without WebGPU show.
+
+- **The part**: ClassCAD's triangles (about nine thousand) in a bounding volume hierarchy, built in a
+  few milliseconds whenever a rebuild lands ([`bvh.js`](src/photo/bvh.js)).
+- **The light**: a studio of three softboxes (one large overhead, a long strip either side along the
+  part) over a soft grey surround, and a floor that bounces light back up into the slots.
+  Softboxes are sampled directly and weighed against the material's own sampling (multiple
+  importance sampling); paths go up to six bounces.
+- **The finishes**: a microfacet material (GGX, its visible normals sampled) over a diffuse base.
+  Hard anodized black is satin and a little metallic; Cerakote flat dark earth is matte, with a fine
+  orange peel in its normal.
+- **The edges**: a machined part's edges are broken, a model's are knives. Each triangle knows which
+  of its edges are the part's sharp edges and the face across them
+  ([`mesh.js`](src/photo/mesh.js)), and the tracer turns the normal toward that face within half a
+  millimetre of the edge, so the edges catch the light as a real part's do.
+- **The shadow**: rays that pass the part and meet the floor measure how much of the light the part
+  keeps from that point; that is laid over the page as the shadow, and the page shows everywhere else.
+- **The picture**: Khronos PBR Neutral tone mapping (the finish's own colour kept). While the camera
+  moves, the picture is made at half size, a few samples a frame, through an edge-aware à-trous
+  filter; once it rests, at full size, until it has 768 samples a pixel, and then nothing is drawn.
+
 ## Run it
 
 ```bash
@@ -118,6 +143,8 @@ localhost. To publish on a domain of your own, use a token from your own ClassCA
   was last built, the finish, and the cart.
 - `src/design.js`: the shop's own rules: the controls' ranges, which configurations the model
   builds, what a configuration has, the weight and the price.
+- `src/photo/`: the photo: the path tracer (WGSL), its hierarchy, its passes; `src/three/Photo.jsx`
+  hands it the camera and the part each frame.
 - `src/three/`: the part, drawn from ClassCAD's tessellation in a dark CAD look. `body.js` turns it
   into faces, edges and silhouettes; `Part.jsx` draws them in the chosen finish;
   `Frame.jsx` adds the frame's passes: ambient occlusion, and the orange outline the CAD app draws

@@ -6,6 +6,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { Part } from './Part'
 import { Frame } from './Frame'
+import { Photo } from './Photo'
 import { useShop } from '../store'
 import { finishOf } from '../design'
 
@@ -43,6 +44,7 @@ function Rig() {
 
 export function View() {
   const body = useShop(s => s.body)
+  const photo = useShop(s => s.look === 'photo' && s.photoOK)
   const finish = useShop(s => s.finish)
   // the sweep of light while a rebuild runs: from the rear face to the muzzle, again and again
   const scan = useRef(() => {
@@ -62,17 +64,18 @@ export function View() {
       <Part body={body} color={finishOf(finish).color} scan={scan} />
       <Rig />
       <Frame body={body} />
+      <Photo />
       <OrbitControls
         makeDefault
         target={[127, 0, 0]}
-        autoRotate
+        autoRotate={!photo}
         autoRotateSpeed={0.45}
         enableDamping
         dampingFactor={0.08}
         enablePan={false}
         enableZoom={false}
         minPolarAngle={0.35}
-        maxPolarAngle={1.75}
+        maxPolarAngle={photo ? 1.5 : 1.75}
       />
     </Canvas>
   )

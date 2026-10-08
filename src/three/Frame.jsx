@@ -9,6 +9,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
+import { useShop } from '../store'
 
 export const MASK = 1
 const RMAX = 32
@@ -233,6 +234,13 @@ export function Frame({ body, color = '#d98a50', width = 4.2, glow = 0.22, radiu
   }
 
   useFrame(({ gl, scene, camera }) => {
+    // (the photo shows the part: the drawing's canvas stays empty under it)
+    const s = useShop.getState()
+    if (s.look === 'photo' && s.photoOK) {
+      gl.setRenderTarget(null)
+      gl.clear()
+      return
+    }
     // the room
     gl.setRenderTarget(null)
     gl.render(scene, camera)
