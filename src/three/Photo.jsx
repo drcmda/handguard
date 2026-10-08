@@ -45,6 +45,9 @@ export function Photo() {
     photo.setFinish(s.finish)
     const dpr = Math.min(2, window.devicePixelRatio || 1)
     photo.resize(Math.round(canvas.clientWidth * dpr), Math.round(canvas.clientHeight * dpr))
+    // (the drawing's render brings the camera's matrices up to date; with the drawing resting, the
+    // controls have only moved it, turned it half: its matrices are brought up to date here)
+    camera.updateMatrixWorld()
     photo.render(camera)
   }, 2)
   return null
