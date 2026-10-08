@@ -4,3 +4,4 @@ dist
 *.local
 .firebase
 cad/out
+.vercel
